@@ -1,4 +1,4 @@
-from extract_embeddings import run_emb
+from extract_embeddings import get_embeddings
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--project_dir", default=r'C:\Users\anshk\Unsupervised_clustering', help="Path to directory")
@@ -12,7 +12,7 @@ if str(args.clust_type).startswith(('a', 'A')):
     from model_ahc import *
 else: 
     from model_sc import *
-all_embeddings, filenames = run_emb(args.project_dir, args.force_emb, args.language)
+all_embeddings, filenames = get_embeddings(args.project_dir, args.force_emb, args.language)
 diarization_pipeline(all_embeddings, filenames, args.n_speakers)
 
     

@@ -66,7 +66,7 @@ def extract_embeddings(audio, emb_path, sr, segments, model, device='cpu'):
         np.save(emb_path,embeddings)
         return embeddings
     
-def run_emb(project_dir, force_emb, language):
+def get_embeddings(project_dir, force_emb, language):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     source = os.path.join(project_dir,'ecapa_tdnn.model')
     audio_dir = os.path.join(project_dir,'wavs')

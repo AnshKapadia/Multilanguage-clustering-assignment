@@ -51,28 +51,42 @@ pip install -r requirements.txt
 ```bash
 python preprocessing.py
 ```
+
 ---
 
 ### Run Clustering
 
 ```bash
-python main.py --project_dir '<path_to_project>'  --n_speakers 36 --clust_name 'sc'/'ahc' --force_emb True/False
+python main.py \
+    --project_dir '<path_to_project>' \
+    --n_speakers 36 \
+    --clust_name sc/ahc \
+    --force_emb True/False \
+    --language english/hindi/both
 ```
 
 ---
 
-## Results (Sample)
+## Results
 
-| Clustering Method| Accuracy (%) |
-|------------------|--------------|
-| AHC              | 82.64        |
-| SC (avg)         | 88.83        |
-| SC (max)         | 93.06        |
+|  Method  | Hindi (%) | English (%) | Both (%) |
+|----------|-----------|-------------|----------|
+|   AHC    |   **95.83**   |   **100.00**    |   82.64  |
+| SC (mean)|   84.35   |   91.14     |   88.83  |
+| SC (max) |   88.89   |   94.44     |   **93.06**  |
+
+---
+
+## Inference
+
+- **AHC performs best** when clustering is limited to **a single language**.
+- **Spectral Clustering outperforms AHC** in the **mixed-language setting**, handling cross-language separation more robustly.
+- Across both methods, **English clustering outperforms Hindi**, likely due to the ECAPA-TDNN model being trained primarily on English-language data.
 
 ---
 
 ## Notes
+
 - Embeddings are extracted using ECAPA-TDNN.
 - Cosine distance is used for affinity calculations.
-- Spectral clustering outperforms AHC in most cases.
 - Results may vary based on speaker diversity and utterance duration.

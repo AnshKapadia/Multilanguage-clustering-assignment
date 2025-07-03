@@ -24,6 +24,7 @@ This dataset consists of 144 utterances collected from 36 children. Each child c
 ├── preprocessing.py
 ├── requirements.txt
 ├── speaker_embedding.py
+├── extract_embeddings.py
 ```
 
 ---

@@ -1,6 +1,7 @@
 __pycache__/
 dummy_data/
 embeddings/
+data/*
 energy_embeddings/
 full_embeddings/
 pyannote_avg_embeddings/

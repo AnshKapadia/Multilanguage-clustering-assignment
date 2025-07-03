@@ -32,6 +32,8 @@ This dataset consists of 144 utterances collected from 36 children. Each child c
 
 ### 1. Create Virtual Environment
 ```bash
+mkdir data
+#Paste data in this folder along with RecordingDetails.csv
 python -m venv diar_env
 source diar_env/bin/activate  # On Windows: diar_env\Scripts\activate
 ```

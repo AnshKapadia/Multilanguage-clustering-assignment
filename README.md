@@ -4,6 +4,12 @@ This project performs unsupervised speaker clustering using speech embeddings fr
 
 ---
 
+## Dataset Overview
+
+This dataset consists of 144 utterances collected from 36 children. Each child contributed 4 utterances — 2 in English and 2 in Hindi. For each language, the 2 utterances are different paragraphs taken from the same story, ensuring consistency in context and style within each language.
+
+---
+
 ## Project Structure
 
 ```

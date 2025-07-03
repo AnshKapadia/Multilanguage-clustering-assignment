@@ -50,7 +50,6 @@ python preprocessing.py
 ```bash
 python main.py --project_dir '<path_to_project>'  --n_speakers 36 --clust_name 'sc'/'ahc' --force_emb True/False
 ```
-```
 
 ---
 

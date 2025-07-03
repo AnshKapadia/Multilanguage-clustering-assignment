@@ -1,23 +1,17 @@
 import os
 import pandas as pd
-import shutil
 from pydub import AudioSegment
 
-
 csv_path = "RecordingDetails.csv"
-audio_folder = "data"  # folder containing the .m4a files
-output_folder = "wavs"  # new folder for .wav files
-os.makedirs(output_folder, exist_ok=True)
+audio_folder = "data"
+output_base = "wavs"
 
-# --- LOAD CSV ---
-df = pd.read_csv(os.path.join(audio_folder,csv_path))
+df = pd.read_csv(os.path.join(audio_folder, csv_path))
 df.columns = df.columns.str.strip()
-df['StudentID'] = df['Audio File Name'].str.extract(r"^(\d+)")
-df['StudentID'] = df['StudentID'].astype('int64')
+df['StudentID'] = df['Audio File Name'].str.extract(r"^(\d+)").astype('int64')
 unique_ids = sorted(df['StudentID'].unique())
 student_id_map = {sid: i for i, sid in enumerate(unique_ids)}
 df['StudentIndex'] = df['StudentID'].map(student_id_map)
-
 
 story_map = {}
 for student_id, group in df.groupby('StudentID'):
@@ -31,11 +25,19 @@ def generate_clean_name(row):
     story_tag = story_map[row['StudentID']][story_name]
     return f"{student_idx}_{story_tag}_{para}.wav"
 
+def is_hindi(text):
+    return any('\u0900' <= ch <= '\u097F' for ch in str(text))
+
 df['CleanedFileName'] = df.apply(generate_clean_name, axis=1)
+df['Language'] = df['Story Name'].apply(lambda x: 'hindi' if is_hindi(x) else 'english')
+
+
+for lang in df['Language'].unique():
+    os.makedirs(os.path.join(output_base, lang), exist_ok=True)
 
 for _, row in df.iterrows():
     original_path = os.path.join(audio_folder, row['Audio File Name'])
-    new_path = os.path.join(output_folder, row['CleanedFileName'])
+    new_path = os.path.join(output_base, row['Language'], row['CleanedFileName'])
 
     if os.path.exists(original_path):
         try:
@@ -47,6 +49,5 @@ for _, row in df.iterrows():
         print(f"Missing file: {original_path}")
 
 df.to_csv("RecordingDetails_Cleaned.csv", index=False)
-
-print("Audio files renamed and saved to:", output_folder)
+print("Audio files saved to:", output_base)
 print("Updated CSV saved as: RecordingDetails_Cleaned.csv")

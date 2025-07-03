@@ -1,0 +1,11 @@
+__pycache__/
+dummy_data/
+embeddings/
+energy_embeddings/
+full_embeddings/
+pyannote_avg_embeddings/
+pyannote_embeddings/
+wavs/
+test.ipynb
+RecordingDetails_Cleaned.csv
+ecapa_tdnn.model

@@ -11,7 +11,7 @@ from eval import *
 from pyannote.audio import Model
 from pyannote.audio.pipelines import VoiceActivityDetection
 
-def init_speaker_encoder(device, source = r'C:\Users\anshk\Unsupervised_clustering\ecapa_tdnn.model'):
+def init_speaker_encoder(device, source):
 	"""
 	Initializes a speaker encoder model with pre-trained weights from a given source file.
 

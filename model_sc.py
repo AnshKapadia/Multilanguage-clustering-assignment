@@ -13,16 +13,7 @@ from eval import *
 from pyannote.audio import Model
 from pyannote.audio.pipelines import VoiceActivityDetection
 
-def init_speaker_encoder(device, source = r'C:\Users\anshk\Unsupervised_clustering\ecapa_tdnn.model'):
-	"""
-	Initializes a speaker encoder model with pre-trained weights from a given source file.
-
-	Args:
-		source (str): The path to the source file containing the pre-trained weights.
-
-	Returns:
-		speaker_encoder (ECAPA_TDNN): The initialized speaker encoder model with pre-trained weights.
-	"""
+def init_speaker_encoder(device, source):
 	speaker_encoder = ECAPA_TDNN(C=1024).cuda()
 	speaker_encoder.eval()
 	loadedState = torch.load(source, map_location=device)
@@ -111,16 +102,16 @@ def diarization_pipeline(project_dir, n_speakers, force_emb):
 
     all_embeddings = np.concatenate(all_embeddings, axis=0)
     accuracies = []
-    for i in tqdm(range(1000),desc='Performing Spectral Clustering'):
+    epochs=1000
+    for i in tqdm(range(epochs),desc='Performing Spectral Clustering'):
         labels = cluster_embeddings(all_embeddings, n_clusters=n_speakers)
         accuracies.append(acc(filenames, labels))
-    print(accuracies)
     plt.hist(accuracies, bins=25, edgecolor='black', range=(min(accuracies), max(accuracies)))
     plt.axvline(85, color='red', linestyle='--', label='85%')
     plt.axvline(90, color='green', linestyle='--', label='90%')
     plt.xlabel("Accuracy")
     plt.ylabel("Frequency")
-    plt.title("Distribution of Spectral Clustering Accuracy (100 Runs)")
+    plt.title(f"Distribution of Spectral Clustering Accuracy ({epochs} Runs)")
     plt.legend()
     plt.grid(True)
     plt.show()

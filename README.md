@@ -7,19 +7,17 @@ This project performs unsupervised speaker clustering using speech embeddings fr
 ## Project Structure
 
 ```
-├── preprocessing/
-│   ├── convert_to_wav.py
-│   └── rename_files.py
-├── model_ahc/
-│   └── agglomerative_clustering.py
-├── model_sc/
-│   └── spectral_clustering.py
-├── utils/
-│   └── embedding_extraction.py
 ├── data/
-│   └── (input and processed audio files)
-├── requirements.txt
+│   └── (input audio files and RecordingDetails.CSV)
+├── .gitignore
 ├── README.md
+├── eval.py
+├── main.py
+├── model_ahc.py
+├── model_sc.py
+├── preprocessing.py
+├── requirements.txt
+├── speaker_embedding.py
 ```
 
 ---
@@ -40,39 +38,25 @@ pip install -r requirements.txt
 
 ---
 
-## Preprocessing
+### Preprocessing - Rename Files and save as wav
 
-### Step 1: Rename Files
 ```bash
-python preprocessing/rename_files.py --input_dir path/to/input_audio
+python preprocessing.py
 ```
-
-### Step 2: Convert to WAV
-```bash
-python preprocessing/convert_to_wav.py --input_dir path/to/input_audio --output_dir data/wav
-```
-
 ---
 
-## Run Clustering
+### Run Clustering
 
-### 1. Agglomerative Clustering
 ```bash
-python model_ahc/agglomerative_clustering.py --input_dir data/wav --num_speakers 3
+python main.py --project_dir '<path_to_project>'  --n_speakers 36 --clust_name 'sc'/'ahc' --force_emb True/False
 ```
-
-### 2. Spectral Clustering
-```bash
-python model_sc/spectral_clustering.py --input_dir data/wav --num_speakers 3 --epochs 1000
 ```
-
-Adjust `--num_speakers` and `--epochs` as needed.
 
 ---
 
 ## Results (Sample)
 
-| Clustering Method | Accuracy (%) |
+| Clustering Method| Accuracy (%) |
 |------------------|--------------|
 | AHC              | 82.64        |
 | SC (avg)         | 88.83        |

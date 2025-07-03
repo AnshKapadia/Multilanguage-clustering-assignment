@@ -1,10 +1,11 @@
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.1.0+cu118
-torchaudio==2.1.0+cu118
-pydub
-scikit-learn
-numpy
-scipy
-soundfile
-tqdm
-pandas
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.7.1+cu128
+torchaudio==2.7.1+cu128
+pydub==0.25.1
+scikit-learn==1.7.0
+numpy==1.25.0
+scipy==1.15.3
+soundfile==0.13.1
+tqdm==4.67.1
+pandas==2.3.0
+pyannote.audio==3.3.2

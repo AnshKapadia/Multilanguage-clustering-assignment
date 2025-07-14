@@ -8,6 +8,9 @@ from eval import *
 from pyannote.audio import Model
 from pyannote.audio.pipelines import VoiceActivityDetection
 
+from pyannote.audio.core.inference import Inference
+from pyannote.core import Segment
+
 def init_speaker_encoder(device, source):
 	speaker_encoder = ECAPA_TDNN(C=1024).cuda()
 	speaker_encoder.eval()
@@ -28,18 +31,46 @@ def load_audio(file_path, target_sr=16000):
         waveform = resampler(waveform)
     return waveform, target_sr
 
-def pyannote_vad(audio_path, sr):
-    model = Model.from_pretrained("pyannote/segmentation-3.0", use_auth_token="your_token")
-    pipeline = VoiceActivityDetection(segmentation=model)
-    HYPER_PARAMETERS = {
-    "min_duration_on": 0.5,
-    "min_duration_off": 0.0
-    }
-    pipeline.instantiate(HYPER_PARAMETERS)
-    vad_result = pipeline(audio_path)
-    segments = [(segment.start, segment.end) for segment in vad_result.get_timeline()]
-    return segments
+#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
+def pyannote_vad(audio_path, sr, max_duration=4.0):
+    model = Model.from_pretrained("pyannote/segmentation-3.0", use_auth_token="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")
+    vad = VoiceActivityDetection(segmentation=model)
+    vad.instantiate({"min_duration_on": 0.5, "min_duration_off": 0.0})
+    seg = Inference(model)
+    # Run VAD pipeline to get segments (Annotation)
+    annotation = vad(audio_path)
 
+    # Get raw scores from the model
+    waveform, sample_rate = model.audio(audio_path)
+    #print(waveform.shape)
+    with torch.no_grad():
+        scores = seg({'waveform': waveform, 'sample_rate': sample_rate})
+#        scores = model(torch.randn((1,32000)))
+    #print(scores)
+    #print(annotation.get_timeline())
+    # Select segments from annotation and assign confidence
+    segments = []
+    for segment in annotation.get_timeline():
+        segment_scores = scores.crop(segment, mode="center")
+        segment_array = np.array(segment_scores.data)
+        avg_conf = float(segment_array.mean()) if segment_array.size > 0 else 0
+        segments.append((segment.start, segment.end, avg_conf))
+    # Sort by confidence and limit total duration
+    segments.sort(key=lambda x: -x[2])
+    selected = []
+    total = 0.0
+    for start, end, _ in segments:
+        dur = end - start
+        if total + dur > max_duration:
+            dur = max_duration - total
+            if dur <= 0: break
+            end = start + dur
+        selected.append((start, end))
+        total += (end - start)
+        if total >= max_duration:
+            break
+        
+    return selected
 def energy_vad(audio, sr, min_silence_len=100, silence_thresh_db=-20):
     audio_pydub = AudioSegment(audio.numpy().tobytes(), frame_rate=sr, sample_width=2, channels=1)
     non_silent = silence.detect_nonsilent(audio_pydub, min_silence_len=min_silence_len, silence_thresh=silence_thresh_db)
@@ -47,24 +78,14 @@ def energy_vad(audio, sr, min_silence_len=100, silence_thresh_db=-20):
     segments = [(start / 1000.0, end / 1000.0) for start, end in non_silent]
     return segments
 
-def extract_embeddings(audio, emb_path, sr, segments, model, device='cpu'):
-    embeddings = []
-    for start, end in segments:
-        start_sample = int(start * sr)
-        end_sample = int(end * sr)
-        segment_audio = audio[start_sample:end_sample]
-        if len(segment_audio) < sr//2:
-            continue
-        segment_audio = segment_audio.unsqueeze(0).to(device)
-        with torch.inference_mode():
-            emb = model.forward(segment_audio.cuda()).cpu().numpy().squeeze()
-            embeddings.append(emb)
 
-    if embeddings:
-        embeddings = np.stack(embeddings)
-        embeddings = np.mean(embeddings,axis=0)
-        np.save(emb_path,embeddings)
-        return embeddings
+def extract_embeddings(audio, emb_path, sr, segments, model, device='cpu'):
+    segment_audio = []
+    segment_audio = torch.cat([audio[int(start * sr):int(end * sr)] for start, end in segments]).unsqueeze(0).to(device)
+    with torch.inference_mode():
+        emb = model.forward(segment_audio.cuda()).cpu().numpy().squeeze()
+        np.save(emb_path,emb)
+        return emb
     
 def get_embeddings(project_dir, force_emb, language):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -83,9 +104,8 @@ def get_embeddings(project_dir, force_emb, language):
              all_embeddings.append(np.expand_dims(np.load(emb_path), axis=0))
              continue
         audio, sr = load_audio(filepath)
-        segments = energy_vad(audio, sr)
-#        segments = pyannote_vad(filepath, sr)
+#        segments = energy_vad(audio, sr)
+        segments = pyannote_vad(filepath, sr)
         all_embeddings.append(np.expand_dims(extract_embeddings(audio, emb_path, sr, segments, emb_model, device), axis=0))
-
     all_embeddings = np.concatenate(all_embeddings, axis=0)
     return all_embeddings, filenames

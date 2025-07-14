@@ -25,6 +25,7 @@ This dataset consists of 144 utterances collected from 36 children. Each child c
 ├── requirements.txt
 ├── speaker_embedding.py
 ├── extract_embeddings.py
+├── cosine_analysis.py
 ```
 
 ---
@@ -68,6 +69,16 @@ python main.py \
 
 ---
 
+## Cosine Distance Analysis
+
+The script `cosine_analysis.py` computes and compares cosine distances across six predefined subcategories based on speaker and language. It is used to evaluate the separability between groups of embeddings before clustering. This helps visualize how distinct or overlapping the speaker clusters are.
+
+### Sample Output
+
+![Sample Cosine Distance Plot](cosine_analysis_output.png)
+
+---
+
 ## Results
 
 |  Method  | Hindi (%) | English (%) | Both (%) |
@@ -91,3 +102,4 @@ python main.py \
 - Embeddings are extracted using ECAPA-TDNN.
 - Cosine distance is used for affinity calculations.
 - Results may vary based on speaker diversity and utterance duration.
+```

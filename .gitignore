@@ -10,3 +10,5 @@ wavs/
 test.ipynb
 RecordingDetails_Cleaned.csv
 ecapa_tdnn.model
+token.txt
+*_embeddings/

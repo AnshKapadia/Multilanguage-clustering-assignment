@@ -14,7 +14,7 @@ def cluster_embeddings(embeddings, n_clusters):
 
 def diarization_pipeline(all_embeddings, filenames, n_speakers):
     accuracies = []
-    epochs=1000
+    epochs=200
     for i in tqdm(range(epochs),desc='Performing Spectral Clustering'):
         labels = cluster_embeddings(all_embeddings, n_clusters=n_speakers)
         accuracies.append(acc(filenames, labels))

@@ -7,7 +7,7 @@ from pydub import AudioSegment, silence
 from eval import *
 from pyannote.audio import Model
 from pyannote.audio.pipelines import VoiceActivityDetection
-
+from hf_token import HF_TOKEN
 from pyannote.audio.core.inference import Inference
 from pyannote.core import Segment
 
@@ -33,7 +33,7 @@ def load_audio(file_path, target_sr=16000):
 
 #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
 def pyannote_vad(audio_path, sr, max_duration=4.0):
-    model = Model.from_pretrained("pyannote/segmentation-3.0", use_auth_token="sample_token")
+    model = Model.from_pretrained("pyannote/segmentation-3.0", use_auth_token=HF_TOKEN)
     vad = VoiceActivityDetection(segmentation=model)
     vad.instantiate({"min_duration_on": 0.5, "min_duration_off": 0.0})
     seg = Inference(model)

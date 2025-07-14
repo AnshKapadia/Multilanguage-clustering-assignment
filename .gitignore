@@ -12,3 +12,4 @@ RecordingDetails_Cleaned.csv
 ecapa_tdnn.model
 token.txt
 *_embeddings/
+hf_token.py

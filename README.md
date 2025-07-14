@@ -48,6 +48,18 @@ pip install -r requirements.txt
 
 ---
 
+### 3. Hugging Face Token Setup (Pre-step)
+
+Before running `extract_embeddings.py`, generate a Hugging Face token at [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).  
+Save it securely in a file named `hf_token.py` with the following format:
+
+```python
+HF_TOKEN = "your_token_here"
+```
+---
+
+## Running Instructions
+
 ### Preprocessing - Rename Files and save as wav
 
 ```bash
